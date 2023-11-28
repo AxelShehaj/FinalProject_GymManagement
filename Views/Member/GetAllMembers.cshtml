@@ -1,0 +1,57 @@
+﻿
+@model List<FinalProject_GymManagement.Data.Entities.Member>
+
+@{
+    ViewData["Title"] = "All Members";
+}
+
+<h2>All Members</h2>
+
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Birthdate</th>
+                <th>ID Card Number</th>
+                <th>Email</th>
+                <th>Registration Date</th>
+                <th>Is Deleted</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var member in Model)
+            {
+                <tr>
+                    <td>@member.FirstName</td>
+                    <td>@member.LastName</td>
+                    <td>@member.Birthdate.ToString("yyyy-MM-dd")</td>
+                    <td>@member.IdCardNumber</td>
+                    <td>@member.Email</td>
+                    <td>@member.RegistrationDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>@(member.IsDeleted ? "Yes" : "No")</td>
+                    <td>
+                        <a asp-controller="Member" asp-action="Edit" asp-route-cardID="@member.IdCardNumber">Edit</a>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No members found.</p>
+}
+
+<button id="showSubscriptions">Show Subscriptions</button>
+
+<!-- JavaScript to handle the click event -->
+<script>
+    document.getElementById("showSubscriptions").addEventListener("click", function () {
+        window.location.href = '@Url.Action("GetAllSubscriptions", "Subscription")';
+    });
+</script>

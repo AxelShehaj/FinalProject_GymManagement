@@ -1,0 +1,63 @@
+﻿@model List<FinalProject_GymManagement.Data.Entities.Subscriptions>
+
+@{
+    ViewData["Title"] = "All Subscription types";
+}
+
+<h2>All Subscription types</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Number Of Months</th>
+                <th>Week Frequency</th>
+                <th>Total Number Of Sessions</th>
+                <th>Total Price</th>
+                <th>Is Deleted</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sub in Model)
+            {
+                <tr>
+                    <td>@sub.Code</td>
+                    <td>@sub.Description</td>
+                    <td>@sub.NumberOfMonths</td>
+                    <td>@sub.WeekFrequency</td>
+                    <td>@sub.TotalNumberOfSessions</td>
+                    <td>@sub.TotalPrice</td>
+                    <td>@(sub.IsDeleted ? "Yes" : "No")</td>
+                    <td>
+                        <a class="editSubscription" data-code="@sub.Code">Edit</a>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No Subscription found.</p>
+}
+
+<button id="goBack">Go Back</button>
+
+<!-- JavaScript to handle the click event -->
+<script>
+    document.addEventListener('click', function (event) {
+        var editLink = event.target.closest('.editSubscription');
+        if (editLink) {
+            var code = editLink.getAttribute('data-code');
+            window.location.href = '@Url.Action("Edit", "Subscription")?code=' + encodeURIComponent(code);
+        }
+    });
+
+    document.getElementById("goBack").addEventListener("click", function () {
+        window.location.href = '@Url.Action("GetAllMembers", "Member")';
+    });
+</script>
