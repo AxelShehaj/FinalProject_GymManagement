@@ -95,8 +95,8 @@ namespace FinalProject_GymManagement.Controllers
 
                     _context.SaveChanges();
 
-                    //return RedirectToAction("GetAllMembers", "Member");
-                    return Json(new { success = true, message = "Changes saved successfully" });
+                    return RedirectToAction("GetAllMembers", "Member");
+                    //return Json(RedirectToAction("GetAllMembers", "Member"));
                 }
                 return View(existingSub);
             }
@@ -106,7 +106,6 @@ namespace FinalProject_GymManagement.Controllers
                 //return View("Error");
                 return Json(new { success = false, message = "Error saving changes" });
             }
-
         }
 
         [HttpPost]

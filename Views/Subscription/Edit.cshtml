@@ -46,42 +46,14 @@
         <span asp-validation-for="IsDeleted" class="text-danger"></span>
     </div>
 
-
-    <button type="button" id="saveChanges">Save Changes</button>
-
-    <a asp-action="GetAllSubscriptions" class="btn btn-secondary">Back to List</a>
-
+    <form asp-controller="Subscription" asp-action="Edit" method="post">
+        <input type="hidden" name="code" value="@Model.Code" />
+        <button type="submit">Save Changes</button>
+        <a asp-action="GetAllSubscriptions" class="btn btn-secondary">Back to List</a>
+    </form>
     
     <form asp-controller="Subscription" asp-action="SoftDelete" method="post">
         <input type="hidden" name="code" value="@Model.Code" />
         <button type="submit">Soft Delete</button>
     </form>
 </form>
-
-<script>
-    document.getElementById("saveChanges").addEventListener("click", function () {
-        // Perform AJAX request to save changes
-        var formData = new FormData(document.getElementById("editForm"));
-
-        // Adjust the URL to your controller action that handles saving changes
-        var url = '@Url.Action("Edit", "Subscription")';
-
-        // Use Fetch API for AJAX request
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Handle success
-                console.log('Data saved successfully:', data);
-
-                // After saving, you can navigate back to the "AllSubscriptions" view
-                window.location.href = '@Url.Action("GetAllSubscriptions", "Subscription")';
-            })
-            .catch(error => {
-                // Handle error
-                console.error('Error saving data:', error);
-            });
-    });
-</script>
