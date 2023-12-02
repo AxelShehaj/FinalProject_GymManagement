@@ -4,10 +4,10 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Interfaces
 {
     public interface ISubscription
     {
-        public void CreateMemberSubscription(Subscriptions subscription);
+        public void CreateSubscription(Subscription subscription);
         public bool SubscriptionExists(string code);
-        public Subscriptions GetSubscriptionByCode(string code);
-        public List<Subscriptions> GetSubscriptions();
+        public Subscription GetSubscriptionByCode(string code);
+        public List<Subscription> GetSubscriptions();
         public void SoftDelete(string code);
     }
 }

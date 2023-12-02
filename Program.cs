@@ -1,6 +1,7 @@
 using FinalProject_GymManagement.BusinessLayer.Services.Implementations;
 using FinalProject_GymManagement.BusinessLayer.Services.Interfaces;
 using FinalProject_GymManagement.Data;
+using FinalProject_GymManagement.Data.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace FinalProject_GymManagement
             //builder.Services.AddScoped(typeof(IUserService), typeof(UserSevice));
             builder.Services.AddScoped(typeof(IMember), typeof(MemberService));
             builder.Services.AddScoped(typeof(ISubscription), typeof(SubscriptionService));
+            builder.Services.AddScoped(typeof(IMemberSubscription), typeof(MemberSubscriptionService));
             #endregion
 
 

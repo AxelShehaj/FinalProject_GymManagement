@@ -109,6 +109,7 @@ namespace FinalProject_GymManagement.Controllers
             }
 
         }
+
         [HttpPost]
         public IActionResult SoftDelete(string cardID)
         {

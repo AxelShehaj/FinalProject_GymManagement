@@ -38,12 +38,12 @@ namespace FinalProject_GymManagement.Controllers
 
         public IActionResult CreateSubscription()
         {
-            var subscription = new Subscriptions();
+            var subscription = new Subscription();
             return View(subscription);
         }
 
         [HttpPost]
-        public IActionResult CreateSubscription([Bind("Code,Description,NumberOfMonths,WeekFrequency,TotalNumberOfSessions,TotalPrice")] Subscriptions subscription)
+        public IActionResult CreateSubscription([FromForm] Subscription subscription)
         {
             if (ModelState.IsValid)
             {
@@ -52,8 +52,8 @@ namespace FinalProject_GymManagement.Controllers
                     ModelState.AddModelError("", "This subscription already exists, please check your code number again!");
                     return View(subscription);
                 }
-                _subscription.CreateMemberSubscription(subscription);
-                return RedirectToAction("GetAllMembers", "Member");
+                _subscription.CreateSubscription(subscription);
+                return RedirectToAction("GetAllSubscriptions", "Subscription");
             }
             return View(subscription);
         }
@@ -72,16 +72,15 @@ namespace FinalProject_GymManagement.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] Subscriptions subscription/*string code, [Bind("Description,NumberOfMonths,WeekFrequency,TotalNumberOfSessions,TotalPrice,IsDeleted")] Subscriptions subscription*/)
+        public IActionResult Edit([FromForm] Subscription subscription)
         {
             try
             {
-                var existingSub = _context.Subscriptions.Where(m => m.Code == subscription.Code).FirstOrDefault();
+                var existingSub = _context.Subscription.Where(m => m.Code == subscription.Code).FirstOrDefault();
 
                 if (existingSub == null)
                 {
-                    //return NotFound();
-                    return Json(new { success = false, message = "Subscription not found" });
+                    return NotFound();
                 }
 
                 if (ModelState.IsValid)
@@ -96,15 +95,13 @@ namespace FinalProject_GymManagement.Controllers
                     _context.SaveChanges();
 
                     return RedirectToAction("GetAllMembers", "Member");
-                    //return Json(RedirectToAction("GetAllMembers", "Member"));
                 }
                 return View(existingSub);
             }
             catch (Exception ex)
             {
-                //ViewBag.errorMessage = ex.Message;
-                //return View("Error");
-                return Json(new { success = false, message = "Error saving changes" });
+                ViewBag.errorMessage = ex.Message;
+                return View("Error");
             }
         }
 
@@ -112,7 +109,7 @@ namespace FinalProject_GymManagement.Controllers
         public IActionResult SoftDelete(string code)
         {
             _subscription.SoftDelete(code);
-            return RedirectToAction("GetAllMembers");
+            return RedirectToAction("GetAllSubscriptions");
         }
     }
 }

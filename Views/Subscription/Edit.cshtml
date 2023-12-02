@@ -1,4 +1,4 @@
-﻿@model FinalProject_GymManagement.Data.Entities.Subscriptions
+﻿@model FinalProject_GymManagement.Data.Entities.Subscription
 
 @{
     ViewData["Title"] = "Edit Subscription";
@@ -50,10 +50,5 @@
         <input type="hidden" name="code" value="@Model.Code" />
         <button type="submit">Save Changes</button>
         <a asp-action="GetAllSubscriptions" class="btn btn-secondary">Back to List</a>
-    </form>
-    
-    <form asp-controller="Subscription" asp-action="SoftDelete" method="post">
-        <input type="hidden" name="code" value="@Model.Code" />
-        <button type="submit">Soft Delete</button>
     </form>
 </form>

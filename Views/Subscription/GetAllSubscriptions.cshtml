@@ -1,4 +1,4 @@
-﻿@model List<FinalProject_GymManagement.Data.Entities.Subscriptions>
+﻿@model List<FinalProject_GymManagement.Data.Entities.Subscription>
 
 @{
     ViewData["Title"] = "All Subscription types";
@@ -18,6 +18,7 @@
                 <th>Total Number Of Sessions</th>
                 <th>Total Price</th>
                 <th>Is Deleted</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -32,8 +33,11 @@
                     <td>@sub.TotalPrice</td>
                     <td>@(sub.IsDeleted ? "Yes" : "No")</td>
                     <td>
-                        <a class="editSubscription" data-code="@sub.Code">Edit</a>
+                        <button class="editSubscription" data-code="@sub.Code">Edit</button>
+                        <button class="deleteSubscription" data-code="@sub.Code">Delete</button>
                     </td>
+
+                    
 
                 </tr>
             }
@@ -49,11 +53,36 @@ else
 
 <!-- JavaScript to handle the click event -->
 <script>
+
     document.addEventListener('click', function (event) {
         var editLink = event.target.closest('.editSubscription');
         if (editLink) {
             var code = editLink.getAttribute('data-code');
             window.location.href = '@Url.Action("Edit", "Subscription")?code=' + encodeURIComponent(code);
+        }
+
+        var deleteButton = event.target.closest('.deleteSubscription');
+        if (deleteButton) {
+            var code = deleteButton.getAttribute('data-code');
+            if (confirm("Are you sure you want to delete this subscription?")) {
+                // AJAX request to delete
+                fetch('@Url.Action("SoftDelete", "Subscription")?code=' + encodeURIComponent(code), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code: code }),
+                }).then(response => {
+                    if (response.ok) {
+                        // Remove the deleted item from the DOM
+                        deleteButton.closest('tr').remove();
+                    } else {
+                        console.error('Failed to delete subscription');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
         }
     });
 

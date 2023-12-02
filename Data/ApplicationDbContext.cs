@@ -13,7 +13,8 @@ namespace FinalProject_GymManagement.Data
         }
 
         public DbSet<Member> Members { get; set; }
-        public DbSet<Subscriptions> Subscriptions { get; set; }
+        public DbSet<Subscription> Subscription { get; set; }
+        public DbSet<MemberSubscription> MemberSubscriptions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

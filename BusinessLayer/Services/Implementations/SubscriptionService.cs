@@ -12,18 +12,18 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             _ApplicationDbContext = ApplicationDbContext;
         }
 
-        public List<Subscriptions> GetSubscriptions()
+        public List<Subscription> GetSubscriptions()
         {
-            var subs = _ApplicationDbContext.Subscriptions.Where(m => m.IsDeleted == false).ToList();
+            var subs = _ApplicationDbContext.Subscription.Where(m => m.IsDeleted == false).ToList();
             return subs;
         }
 
         public bool SubscriptionExists(string code)
         {
-            return _ApplicationDbContext.Subscriptions.Any(m => m.Code == code);
+            return _ApplicationDbContext.Subscription.Any(m => m.Code == code);
         }
 
-        public void CreateMemberSubscription(Subscriptions subscription)
+        public void CreateSubscription(Subscription subscription)
         {
 
             try
@@ -34,7 +34,7 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 }
                 subscription.IsDeleted = false;
 
-                _ApplicationDbContext.Subscriptions.Add(subscription);
+                _ApplicationDbContext.Subscription.Add(subscription);
                 _ApplicationDbContext.SaveChanges();
 
             }
@@ -45,7 +45,7 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
 
         }
 
-        public Subscriptions GetSubscriptionByCode(string code)
+        public Subscription GetSubscriptionByCode(string code)
         {
             try
             {
@@ -53,8 +53,8 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 {
                     throw new Exception("We cant find the subscription, please check the code again");
                 }
-                var subscription = _ApplicationDbContext.Subscriptions.Where(m => m.Code == code).FirstOrDefault();
-                var sub = new Subscriptions()
+                var subscription = _ApplicationDbContext.Subscription.Where(m => m.Code == code).FirstOrDefault();
+                var sub = new Subscription()
                 {
                     Description = subscription.Description,
                     NumberOfMonths = subscription.NumberOfMonths,
@@ -73,13 +73,21 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
 
         public void SoftDelete(string code)
         {
-            var sub = _ApplicationDbContext.Subscriptions.Where(m => m.Code == code).FirstOrDefault();
-
-            if (sub != null)
+            try
             {
-                sub.IsDeleted = true;
-                _ApplicationDbContext.SaveChanges();
+                var sub = _ApplicationDbContext.Subscription.Where(m => m.Code == code).FirstOrDefault();
+
+                if (sub != null)
+                {
+                    sub.IsDeleted = true;
+                    _ApplicationDbContext.SaveChanges();
+                }
             }
+            catch (Exception)
+            {
+                throw new Exception("Error");
+            }
+            
         }
 
     }

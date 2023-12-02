@@ -178,13 +178,21 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
 
         public void SoftDelete(string cardID)
         {
-            var member = _ApplicationDbContext.Members.Where(m => m.IdCardNumber == cardID).FirstOrDefault();
-
-            if (member != null)
+            try
             {
-                member.IsDeleted = true;
-                _ApplicationDbContext.SaveChanges();
+                var member = _ApplicationDbContext.Members.Where(m => m.IdCardNumber == cardID).FirstOrDefault();
+
+                if (member != null)
+                {
+                    member.IsDeleted = true;
+                    _ApplicationDbContext.SaveChanges();
+                }
             }
+            catch (Exception)
+            {
+                throw new Exception("Error");
+            }
+            
         }
     }
 }

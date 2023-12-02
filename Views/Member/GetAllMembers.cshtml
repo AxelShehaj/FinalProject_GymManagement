@@ -48,10 +48,15 @@ else
 }
 
 <button id="showSubscriptions">Show Subscriptions</button>
+<button id="showActiveSubscriptions">Show Active Subscriptions</button>
 
 <!-- JavaScript to handle the click event -->
 <script>
     document.getElementById("showSubscriptions").addEventListener("click", function () {
         window.location.href = '@Url.Action("GetAllSubscriptions", "Subscription")';
+    });
+
+    document.getElementById("showActiveSubscriptions").addEventListener("click", function () {
+        window.location.href = '@Url.Action("GetAllMembersSubscription", "MemberSubscription")';
     });
 </script>
