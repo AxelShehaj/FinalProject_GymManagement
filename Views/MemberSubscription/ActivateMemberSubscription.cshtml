@@ -1,0 +1,36 @@
+﻿@model FinalProject_GymManagement.ViewModel.MemberSubscriptionVM
+
+@{
+    ViewData["Title"] = "Activate Subscription";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Activate Member Subscription</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="MemberSubscription" asp-action="ActivateMemberSubscription" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="MemberCardID"></label>
+                <input asp-for="MemberCardID" class="form-control" />
+                <span asp-validation-for="MemberCardID" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SubscribtionCode"></label>
+                <input asp-for="SubscribtionCode" class="form-control" />
+                <span asp-validation-for="SubscribtionCode" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Activate Member Subscription" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="GetAllMembers">Back to List</a>
+</div>

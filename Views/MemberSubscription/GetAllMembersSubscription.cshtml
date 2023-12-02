@@ -1,0 +1,97 @@
+﻿@model List<FinalProject_GymManagement.ViewModel.MemberSubscriptionTableVM>
+
+@{
+    ViewData["Title"] = "All Active Subscriptions";
+}
+
+<h2>All Active Subscriptions</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Member Card Id</th>
+                <th>Subscription Code</th>
+                <th>Email</th>
+                <th>Original Price</th>
+                <th>Discount Value</th>
+                <th>Paid Price</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Remaining Sessions</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ms in Model)
+            {
+                <tr>
+                    <td>@ms.MemberCardId</td>
+                    <td>@ms.SubscriptionCode</td>
+                    <td>@ms.Email</td>
+                    <td>@ms.OriginalPrice</td>
+                    <td>@ms.DiscountValue</td>
+                    <td>@ms.PaidPrice</td>
+                    <td>@ms.StartDate</td>
+                    <td>@ms.EndDate</td>
+                    <td>@ms.RemainingSessions</td>
+                    <td>
+                        <button class="editSubscription" data-memberCardId="@ms.MemberCardId" data-subscriptionCode="@ms.SubscriptionCode">Edit</button>
+                        <button class="deleteSubscription" data-memberCardId="@ms.MemberCardId" data-subscriptionCode="@ms.SubscriptionCode">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No Active Subscription found.</p>
+}
+
+<button id="goBack">Go Back</button>
+
+<!-- JavaScript to handle the click event -->
+
+<script>
+    document.addEventListener('click', function (event) {
+        var editLink = event.target.closest('.editSubscription');
+        if (editLink) {
+            var memberCardId = editLink.getAttribute('data-memberCardId');
+            var subscriptionCode = editLink.getAttribute('data-subscriptionCode');
+            window.location.href = '@Url.Action("Edit", "MemberSubscription")?memberCardID=' + encodeURIComponent(memberCardId) + '&subscriptionCode=' + encodeURIComponent(subscriptionCode);
+        }
+    });
+
+    document.addEventListener('click', function (event) {
+        var deleteButton = event.target.closest('.deleteSubscription');
+        if (deleteButton) {
+            var memberCardId = deleteButton.getAttribute('data-memberCardId');
+            var subscriptionCode = deleteButton.getAttribute('data-subscriptionCode');
+            if (confirm("Are you sure you want to delete this subscription?")) {
+                // Perform AJAX request to delete
+                fetch('@Url.Action("SoftDelete", "MemberSubscription")?memberCardID=' + encodeURIComponent(memberCardId) + '&subscriptionCode=' + encodeURIComponent(subscriptionCode), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ memberCardID: memberCardId, subscriptionCode: subscriptionCode }),
+                }).then(response => {
+                    if (response.ok) {
+                        // Remove the deleted item from the DOM
+                        deleteButton.closest('tr').remove();
+                    } else {
+                        console.error('Failed to delete subscription');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+    });
+
+    document.getElementById("goBack").addEventListener("click", function () {
+        window.location.href = '@Url.Action("GetAllMembers", "Member")';
+    });
+</script>
