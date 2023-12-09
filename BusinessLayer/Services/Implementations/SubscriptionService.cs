@@ -27,7 +27,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
 
             return new string(chars);
         }
-
         public List<SubscriptionGridTableVM> GetSubscriptions()
         {
             try
@@ -50,7 +49,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
             
         }
-
         public bool SubscriptionExists(string code)
         {
             try
@@ -63,10 +61,8 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
             
         }
-
         public void CreateSubscription(SubscriptionCreateVM subscriptionCreateVM)
         {
-
             try
             {
                 if (subscriptionCreateVM == null)
@@ -89,17 +85,12 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                     _ApplicationDbContext.Subscription.Add(sub);
                     _ApplicationDbContext.SaveChanges();
                 }
-
-                
-
             }
             catch (Exception)
             {
                 throw new Exception("Error in getting the Members details");
             }
-
         }
-
         public SubscriptionEditVM GetSubscriptionByCode(string code)
         {
             try
@@ -125,7 +116,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 throw new Exception("Error in getting subscription");
             }
         }
-
         public void SoftDelete(string code)
         {
             try
@@ -144,8 +134,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
             
         }
-
-
         public void Edit(SubscriptionEditVM subscriptionEditVM)
         {
 
@@ -209,7 +197,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             {
                 throw ex;
             }
-            
         }
     }
 }

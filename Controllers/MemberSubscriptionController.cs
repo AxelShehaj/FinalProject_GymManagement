@@ -10,11 +10,9 @@ namespace FinalProject_GymManagement.Controllers
     public class MemberSubscriptionController : Controller
     {
         private readonly IMemberSubscription _memberSubscription;
-        private readonly ApplicationDbContext _context;
 
-        public MemberSubscriptionController(ApplicationDbContext context, IMemberSubscription memberSubscription)
+        public MemberSubscriptionController(IMemberSubscription memberSubscription)
         {
-            _context = context;
             _memberSubscription = memberSubscription;
         }
 
@@ -22,7 +20,6 @@ namespace FinalProject_GymManagement.Controllers
         {
             return View();
         }
-
         public IActionResult GetAllMembersSubscription()
         {
                 var membersSub = _memberSubscription.GetMembersSubscription();
@@ -37,15 +34,12 @@ namespace FinalProject_GymManagement.Controllers
             };
             return View(memberSb);
         }
-
         [HttpPost]
         public IActionResult ActivateMemberSubscription([FromForm] MemberSubscriptionVM memberSubscriptionVM)
         {
                 if (ModelState.IsValid)
                 {
-                    var member = _context.Members.Where(m => m.IdCardNumber == memberSubscriptionVM.MemberCardID).FirstOrDefault();
-
-                    if (_memberSubscription.MemberSubscriptionExist(member))
+                    if (_memberSubscription.MemberSubscriptionExist(memberSubscriptionVM))
                     {
                         ModelState.AddModelError(" ", "Subscription Exists");
                         memberSubscriptionVM.MemberCardList = _memberSubscription.GetMembersCardID();
@@ -59,8 +53,6 @@ namespace FinalProject_GymManagement.Controllers
                 memberSubscriptionVM.SubscriptionCodeList = _memberSubscription.GetSubscriberCode();
                 return View(memberSubscriptionVM);
         }
-
-
         public IActionResult Edit(string memberCardID, string subscriptionCode)
         {
             var memberSub = _memberSubscription.GetMemberSubscriptionByDetail(memberCardID, subscriptionCode);
@@ -69,10 +61,8 @@ namespace FinalProject_GymManagement.Controllers
             {
                 return NotFound();
             }
-
             return View(memberSub);
         }
-
         [HttpPost]
         public IActionResult Edit([FromForm] MemberSubscriptionEditVM memberSubscriptionEditVM)
         {
@@ -83,14 +73,11 @@ namespace FinalProject_GymManagement.Controllers
                 }
                 return View(memberSubscriptionEditVM);
         }
-
-
         [HttpPost]
         public IActionResult SoftDelete(string memberCardID, string subscriptionCode)
         {
             _memberSubscription.SoftDelete(memberCardID, subscriptionCode);
             return RedirectToAction("GetAllMembersSubscription");
         }
-
     }
 }

@@ -19,23 +19,26 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li >
+                        
                        @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                @Html.ActionLink("Create Member", "Create", "Member")
-                            </li>
-                            <li class="nav-item">
-                                @Html.ActionLink(" Create Subscription", "CreateSubscription", "Subscription")
-                            </li>
-                            <li class="nav-item">
-                                @Html.ActionLink(" Activate Member Subscription", "ActivateMemberSubscription", "MemberSubscription")
-                            </li>
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                </li>@* 
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                </li> *@
+                                <li class="nav-item">
+                                    @Html.ActionLink("Create Member", "Create", "Member", null, new { @class = "nav-link btn btn-outline-primary" })
+                                </li>
+                                <li class="nav-item">
+                                    @Html.ActionLink("Create Subscription", "CreateSubscription", "Subscription", null, new { @class = "nav-link btn btn-outline-success" })
+                                </li>
+                                <li class="nav-item">
+                                    @Html.ActionLink("Activate Member Subscription", "ActivateMemberSubscription", "MemberSubscription", null, new { @class = "nav-link btn btn-outline-info" })
+                                </li>
+                            </ul>
                         }
                     </ul>
                     <partial name="_LoginPartial" />
@@ -57,6 +60,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

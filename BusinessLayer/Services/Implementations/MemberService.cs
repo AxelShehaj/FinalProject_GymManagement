@@ -28,7 +28,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
 
             return new string(chars);
         }
-
         public List<MemberGridTableVM> GetMembers()
         {
             var members = _ApplicationDbContext.Members.Where(m => m.IsDeleted == false).ToList();
@@ -43,7 +42,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }).ToList();
             return membersVM;
         }
-
         // Check if the member exists
         public bool MemberExists(string idCard)
         {
@@ -90,73 +88,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
 
         }
-
-        #region Get members by details
-        public List<Member> GetMemberByFirstName(string name)
-        {
-            try
-            {
-                if (name == null)
-                {
-                    throw new Exception("We cant find a member, please check the Name, Last Name, Card ID or Email again");
-                }
-                var gymMember = _ApplicationDbContext.Members.Where(m => m.FirstName == name).ToList();
-                var member = new List<Member>();
-
-                foreach (var item in gymMember)
-                {
-                    member.Add(new Member()
-                    {
-                        FirstName = item.FirstName,
-                        LastName = item.LastName,
-                        Email = item.Email,
-                        IdCardNumber = item.IdCardNumber,
-                        Birthdate = item.Birthdate,
-                        RegistrationDate = item.RegistrationDate,
-                        IsDeleted = item.IsDeleted,
-                    });
-                }
-
-                return member;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public List<Member> GetMemberByLastName(string lastName)
-        {
-            try
-            {
-                if (lastName == null)
-                {
-                    throw new Exception("We cant find a member, please check the Name, Last Name, Card ID or Email again");
-                }
-                var gymMember = _ApplicationDbContext.Members.Where(m => m.LastName == lastName).ToList();
-                var member = new List<Member>();
-
-                foreach (var item in gymMember)
-                {
-                    member.Add(new Member()
-                    {
-                        FirstName = item.FirstName,
-                        LastName = item.LastName,
-                        Email = item.Email,
-                        IdCardNumber = item.IdCardNumber,
-                        Birthdate = item.Birthdate,
-                        RegistrationDate = item.RegistrationDate,
-                        IsDeleted = item.IsDeleted,
-                    });
-                }
-                return member;
-            }
-            catch (Exception)
-            {
-                throw new Exception("Error in getting member");
-            }
-        }
-
         public MemberEditVM GetMemberByCardID(string cardID)
         {
             try
@@ -181,40 +112,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 throw ex;
             }
         }
-
-        public List<Member> GetMemberByEmail(string email)
-        {
-            try
-            {
-                if (email == null)
-                {
-                    throw new Exception("We cant find a member, please check the Name, Last Name, Card ID or Email again");
-                }
-                var gymMember = _ApplicationDbContext.Members.Where(m => m.Email == email).ToList();
-                var member = new List<Member>();
-
-                foreach (var item in gymMember)
-                {
-                    member.Add(new Member()
-                    {
-                        FirstName = item.FirstName,
-                        LastName = item.LastName,
-                        Email = item.Email,
-                        IdCardNumber = item.IdCardNumber,
-                        Birthdate = item.Birthdate,
-                        RegistrationDate = item.RegistrationDate,
-                        IsDeleted = item.IsDeleted,
-                    });
-                }
-                return member;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        #endregion
-
         public void SoftDelete(string cardID)
         {
             try
@@ -233,7 +130,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
 
         }
-
         public List<MemberGridTableVM> Search(MemberFilterSearchVM members)
         {
             try
@@ -271,8 +167,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 throw ex;
             }
         }
-
-
         public void Edit(MemberEditVM memberEditVM)
         {
             try

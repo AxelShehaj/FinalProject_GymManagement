@@ -12,12 +12,10 @@ namespace FinalProject_GymManagement.Controllers
     {
 
         private readonly IMember _members;
-        private readonly ApplicationDbContext _context;
 
 
-        public MemberController(ApplicationDbContext context, IMember members)
+        public MemberController(IMember members)
         {
-            _context = context;
             _members = members;
         }
 
@@ -49,14 +47,11 @@ namespace FinalProject_GymManagement.Controllers
             }
             return View(memberCreateVM);
         }
-
-        
         public IActionResult GetAllMembers()
         {
                 var members = _members.GetMembers();
                 return View(members);
         }
-
         public IActionResult Edit(string cardID)
         {
             var member = _members.GetMemberByCardID(cardID);
@@ -66,7 +61,6 @@ namespace FinalProject_GymManagement.Controllers
             }
             return View(member);
         }
-
         [HttpPost]
         public IActionResult Edit([FromForm] MemberEditVM memberEditVM)
         {
@@ -77,7 +71,6 @@ namespace FinalProject_GymManagement.Controllers
                 }
                 return View(memberEditVM);
         }
-
         [HttpPost]
         public IActionResult SoftDelete(string cardID)
         {

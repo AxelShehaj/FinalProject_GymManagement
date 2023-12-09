@@ -41,24 +41,19 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             {
                 throw ex;
             }
-            
         }
-
-        public bool MemberSubscriptionExist (Member member)
+        public bool MemberSubscriptionExist (MemberSubscriptionVM memberSubscriptionVM)
         {
             try
             {
+                var member = _ApplicationDbContext.Members.Where(m => m.IdCardNumber == memberSubscriptionVM.MemberCardID).FirstOrDefault();
                 return _ApplicationDbContext.MemberSubscriptions.Any(ms => ms.MemberID == member.ID && ms.IsDeleted == false);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            
         }
-
-        
-
         public void ActivateSubscription(string memberCardID, string subscribtionCode)
         {
 
@@ -86,10 +81,8 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 {
                     throw new Exception("Error there is no member neither subscription!");
                 }
-
                 decimal discountValue = CalculateDiscount();
                 decimal paidPrice = subscription.TotalPrice - discountValue;
-
                 var newMemberSubscription = new MemberSubscription
                 {
                     MemberID = member.ID,
@@ -112,7 +105,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
             
         }
-
         public MemberSubscriptionEditVM GetMemberSubscriptionByDetail(string memberCardID, string subscriptionCode)
         {
             try
@@ -136,8 +128,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 throw new Exception("Error in getting subscription");
             }
         }
-
-
         public void SoftDelete(string memberCardID, string subscriptionCode)
         {
             try
@@ -159,7 +149,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
             
         }
-
         public List<SelectListItem> GetMembersCardID()
         {
             try
@@ -176,7 +165,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 throw ex;
             }
         }
-
         public List<SelectListItem> GetSubscriberCode()
         {
             try
@@ -194,7 +182,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
             
         }
-
         public void Edit(MemberSubscriptionEditVM memberSubscriptionEditVM)
         {
             try
@@ -216,7 +203,6 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             {
                 throw ex;
             }
-            
         }
     }
 }

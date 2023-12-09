@@ -15,7 +15,7 @@ namespace FinalProject_GymManagement.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("GetAllMembers", "Member");
         }
 
         public IActionResult Privacy()

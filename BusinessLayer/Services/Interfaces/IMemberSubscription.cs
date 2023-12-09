@@ -6,7 +6,7 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Interfaces
 {
     public interface IMemberSubscription
     {
-        public bool MemberSubscriptionExist(Member member);
+        public bool MemberSubscriptionExist(MemberSubscriptionVM memberSubscriptionVM);
         public void ActivateSubscription(string memberCardID, string subscribtionCode);
         public List<MemberSubscriptionTableVM> GetMembersSubscription();
         public MemberSubscriptionEditVM GetMemberSubscriptionByDetail(string memberCardID, string subscriptionCode);

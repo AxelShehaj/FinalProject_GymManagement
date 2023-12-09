@@ -11,24 +11,21 @@ namespace FinalProject_GymManagement.Controllers
     {
 
         private readonly ISubscription _subscription;
-        private readonly ApplicationDbContext _context;
 
-        public IActionResult GetAllSubscriptions()
+        
+        public SubscriptionController(ISubscription subscription)
         {
-                var subs = _subscription.GetSubscriptions();
-                return View(subs);
-        }
-
-        public SubscriptionController(ApplicationDbContext context, ISubscription subscription)
-        {
-            _context = context;
             _subscription = subscription;
         }
         public IActionResult Index()
         {
             return View();
         }
-
+        public IActionResult GetAllSubscriptions()
+        {
+            var subs = _subscription.GetSubscriptions();
+            return View(subs);
+        }
         public IActionResult CreateSubscription()
         {
             
@@ -37,7 +34,6 @@ namespace FinalProject_GymManagement.Controllers
             
             
         }
-
         [HttpPost]
         public IActionResult CreateSubscription([FromForm] SubscriptionCreateVM subscription)
         {
@@ -48,20 +44,15 @@ namespace FinalProject_GymManagement.Controllers
              }
              return View(subscription);
         }
-
         public IActionResult Edit(string code)
         {
                 var subscription = _subscription.GetSubscriptionByCode(code);
-
                 if (subscription == null)
                 {
                     return NotFound();
                 }
-
                 return View(subscription);
-            
         }
-
         [HttpPost]
         public IActionResult Edit([FromForm] SubscriptionEditVM subscription)
         {
@@ -72,14 +63,12 @@ namespace FinalProject_GymManagement.Controllers
                 }
                 return View(subscription);
         }
-
         [HttpPost]
         public IActionResult SoftDelete(string code)
         {
                 _subscription.SoftDelete(code);
                 return RedirectToAction("GetAllSubscriptions");
         }
-
         [HttpGet]
         public IActionResult Search(SubscriptionFilterSearchVM subscriptions)
         {
