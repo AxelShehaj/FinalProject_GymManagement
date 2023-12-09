@@ -1,4 +1,4 @@
-﻿@model FinalProject_GymManagement.Data.Entities.Subscription
+﻿@* @model FinalProject_GymManagement.Data.Entities.Subscription
 
 @{
     ViewData["Title"] = " Create Subscription";
@@ -57,4 +57,62 @@
 
 <div>
     <a asp-action="GetAllSubscriptions">Back to List</a>
+</div> *@
+
+@model FinalProject_GymManagement.Data.Entities.Subscription
+
+@{
+    ViewData["Title"] = "Create Subscription";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create Subscription</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        @using (Html.BeginForm("CreateSubscription", "Subscription", FormMethod.Post))
+        {
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @Html.HiddenFor(model => model.Code)
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description)
+                @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.NumberOfMonths)
+                @Html.TextBoxFor(model => model.NumberOfMonths, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.NumberOfMonths, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.WeekFrequency)
+                @Html.TextBoxFor(model => model.WeekFrequency, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.WeekFrequency, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TotalNumberOfSessions)
+                @Html.TextBoxFor(model => model.TotalNumberOfSessions, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TotalNumberOfSessions, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TotalPrice)
+                @Html.TextBoxFor(model => model.TotalPrice, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TotalPrice, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create Subscription" class="btn btn-primary" />
+            </div>
+        }
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "GetAllSubscriptions")
 </div>

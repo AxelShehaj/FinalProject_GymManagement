@@ -25,30 +25,22 @@ namespace FinalProject_GymManagement.Controllers
 
         public IActionResult GetAllMembersSubscription()
         {
-            try
-            {
                 var membersSub = _memberSubscription.GetMembersSubscription();
                 return View(membersSub);
-            }
-
-            catch (Exception ex)
-            {
-                ViewBag.errorMessage = ex.Message;
-                return View("Error");
-            }
         }
         public IActionResult ActivateMemberSubscription()
         {
-            var memberSb = new MemberSubscriptionVM();
+            var memberSb = new MemberSubscriptionVM
+            {
+                MemberCardList = _memberSubscription.GetMembersCardID(),
+                SubscriptionCodeList = _memberSubscription.GetSubscriberCode()
+            };
             return View(memberSb);
         }
 
         [HttpPost]
         public IActionResult ActivateMemberSubscription([FromForm] MemberSubscriptionVM memberSubscriptionVM)
         {
-
-            try
-            {
                 if (ModelState.IsValid)
                 {
                     var member = _context.Members.Where(m => m.IdCardNumber == memberSubscriptionVM.MemberCardID).FirstOrDefault();
@@ -56,25 +48,21 @@ namespace FinalProject_GymManagement.Controllers
                     if (_memberSubscription.MemberSubscriptionExist(member))
                     {
                         ModelState.AddModelError(" ", "Subscription Exists");
+                        memberSubscriptionVM.MemberCardList = _memberSubscription.GetMembersCardID();
+                        memberSubscriptionVM.SubscriptionCodeList = _memberSubscription.GetSubscriberCode();
                         return View(memberSubscriptionVM);
                     }
                     _memberSubscription.ActivateSubscription(memberSubscriptionVM.MemberCardID, memberSubscriptionVM.SubscribtionCode);
-                    return RedirectToAction("GetAllMembers", "Member");
+                    return RedirectToAction("GetAllMembersSubscription", "MemberSubscription");
                 }
+                memberSubscriptionVM.MemberCardList = _memberSubscription.GetMembersCardID();
+                memberSubscriptionVM.SubscriptionCodeList = _memberSubscription.GetSubscriberCode();
                 return View(memberSubscriptionVM);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.errorMessage = ex.Message;
-                return View("Error");
-            }
-            
         }
 
 
         public IActionResult Edit(string memberCardID, string subscriptionCode)
         {
-
             var memberSub = _memberSubscription.GetMemberSubscriptionByDetail(memberCardID, subscriptionCode);
 
             if (memberSub == null)
@@ -86,38 +74,14 @@ namespace FinalProject_GymManagement.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] MemberSubscriptionTableVM memberSubscriptionTableVM)
+        public IActionResult Edit([FromForm] MemberSubscriptionEditVM memberSubscriptionEditVM)
         {
-            try
-            {
                 if (ModelState.IsValid)
                 {
-                    var existingMemberSubscription = _context.MemberSubscriptions
-                        .FirstOrDefault(ms => ms.Member.IdCardNumber == memberSubscriptionTableVM.MemberCardId && ms.Subscription.Code == memberSubscriptionTableVM.SubscriptionCode);
-
-                    if (existingMemberSubscription == null)
-                    {
-                        return NotFound();
-                    }
-                    existingMemberSubscription.OriginalPrice = memberSubscriptionTableVM.OriginalPrice;
-                    existingMemberSubscription.DiscountValue = memberSubscriptionTableVM.DiscountValue;
-                    existingMemberSubscription.PaidPrice = memberSubscriptionTableVM.PaidPrice;
-                    existingMemberSubscription.StartDate = memberSubscriptionTableVM.StartDate;
-                    existingMemberSubscription.EndDate = memberSubscriptionTableVM.EndDate;
-                    existingMemberSubscription.RemainingSessions = memberSubscriptionTableVM.RemainingSessions;
-
-                    _context.SaveChanges();
-
-                    return RedirectToAction("GetAllMembersSubscription", "Member");
+                _memberSubscription.Edit(memberSubscriptionEditVM);
+                return RedirectToAction("GetAllMembersSubscription", "MemberSubscription");
                 }
-                return View(memberSubscriptionTableVM);
-
-            }
-            catch (Exception ex)
-            {
-                ViewBag.errorMessage = ex.Message;
-                return View("Error");
-            }
+                return View(memberSubscriptionEditVM);
         }
 
 

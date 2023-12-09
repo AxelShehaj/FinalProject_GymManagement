@@ -2,6 +2,8 @@
 using FinalProject_GymManagement.Data;
 using FinalProject_GymManagement.Data.Entities;
 using FinalProject_GymManagement.ViewModel;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Sockets;
 
 namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
@@ -16,27 +18,46 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
 
         public List<MemberSubscriptionTableVM> GetMembersSubscription()
         {
-            var membersSub = _ApplicationDbContext.MemberSubscriptions.Where(m => m.IsDeleted == false).Select(ms => new MemberSubscriptionTableVM
+            try
             {
-                Id = ms.ID,
-                MemberCardId = ms.Member.IdCardNumber,
-                SubscriptionCode = ms.Subscription.Code,
-                Email = ms.Member.Email,
-                OriginalPrice = ms.OriginalPrice,
-                DiscountValue = ms.DiscountValue,
-                PaidPrice = ms.PaidPrice,
-                StartDate = ms.StartDate,
-                EndDate = ms.EndDate,
-                RemainingSessions = ms.RemainingSessions,
-                IsDeleted = ms.IsDeleted
-            }).ToList();
-            return membersSub;
+                var membersSub = _ApplicationDbContext.MemberSubscriptions
+                .Where(m => m.IsDeleted == false && m.Member.IsDeleted == false && m.Subscription.IsDeleted == false)
+                .Select(ms => new MemberSubscriptionTableVM
+                {
+                    MemberCardId = ms.Member.IdCardNumber,
+                    SubscriptionCode = ms.Subscription.Code,
+                    Email = ms.Member.Email,
+                    OriginalPrice = ms.OriginalPrice,
+                    DiscountValue = ms.DiscountValue,
+                    PaidPrice = ms.PaidPrice,
+                    StartDate = ms.StartDate,
+                    EndDate = ms.EndDate,
+                    RemainingSessions = ms.RemainingSessions,
+                    IsDeleted = ms.IsDeleted
+                }).ToList();
+                return membersSub;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
         }
 
         public bool MemberSubscriptionExist (Member member)
         {
-            return _ApplicationDbContext.MemberSubscriptions.Any(ms => ms.MemberID == member.ID);
+            try
+            {
+                return _ApplicationDbContext.MemberSubscriptions.Any(ms => ms.MemberID == member.ID && ms.IsDeleted == false);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
         }
+
+        
 
         public void ActivateSubscription(string memberCardID, string subscribtionCode)
         {
@@ -46,12 +67,27 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 var member = _ApplicationDbContext.Members.Where(m => m.IdCardNumber == memberCardID).FirstOrDefault();
                 var subscription = _ApplicationDbContext.Subscription.Where(s => s.Code == subscribtionCode).FirstOrDefault();
 
+                decimal CalculateDiscount()
+                {
+                    switch (subscription.NumberOfMonths)
+                    {
+                        case 6:
+                            return 0.10m * subscription.TotalPrice;
+                        case 8:
+                            return 0.20m * subscription.TotalPrice;
+                        case 12:
+                            return 0.25m * subscription.TotalPrice;
+                        default:
+                            return 0;
+                    }
+                } // Discounut method
+
                 if (member == null && subscription == null)
                 {
                     throw new Exception("Error there is no member neither subscription!");
                 }
 
-                decimal discountValue = 0;
+                decimal discountValue = CalculateDiscount();
                 decimal paidPrice = subscription.TotalPrice - discountValue;
 
                 var newMemberSubscription = new MemberSubscription
@@ -77,7 +113,7 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             
         }
 
-        public MemberSubscriptionTableVM GetMemberSubscriptionByDetail(string memberCardID, string subscriptionCode)
+        public MemberSubscriptionEditVM GetMemberSubscriptionByDetail(string memberCardID, string subscriptionCode)
         {
             try
             {
@@ -89,14 +125,8 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 var subscription = _ApplicationDbContext.Subscription.Where(s => s.Code == subscriptionCode).FirstOrDefault();
 
                 var ms = _ApplicationDbContext.MemberSubscriptions.Where(ms => ms.MemberID == member.ID && ms.SubscriptionID == subscription.ID).FirstOrDefault();
-                var sub = new MemberSubscriptionTableVM()
+                var sub = new MemberSubscriptionEditVM()
                 {
-                    Email = ms.Member.Email,
-                    OriginalPrice = ms.OriginalPrice,
-                    DiscountValue = ms.DiscountValue,
-                    PaidPrice = ms.PaidPrice,
-                    StartDate = ms.StartDate,
-                    EndDate = ms.EndDate,
                     RemainingSessions = ms.RemainingSessions,
                 };
                 return sub;
@@ -126,6 +156,65 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             catch (Exception)
             {
                 throw new Exception("Error");
+            }
+            
+        }
+
+        public List<SelectListItem> GetMembersCardID()
+        {
+            try
+            {
+                var memberCardID = _ApplicationDbContext.Members.Where(m => m.IsDeleted == false).ToList();
+                return memberCardID.Select(mc => new SelectListItem
+                {
+                    Value = mc.IdCardNumber,
+                    Text = $"Full Name:{mc.FirstName + " " + mc.LastName}, Card Id:{mc.IdCardNumber}"
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<SelectListItem> GetSubscriberCode()
+        {
+            try
+            {
+                var subscriptionsCode = _ApplicationDbContext.Subscription.Where(m => m.IsDeleted == false).ToList();
+                return subscriptionsCode.Select(sub => new SelectListItem
+                {
+                    Value = sub.Code,
+                    Text = $"Subscription Code:{sub.Code}, Description:{sub.Description}"
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+
+        public void Edit(MemberSubscriptionEditVM memberSubscriptionEditVM)
+        {
+            try
+            {
+                if (memberSubscriptionEditVM != null)
+                {
+                    var existingMemberSubscription = _ApplicationDbContext.MemberSubscriptions
+                        .FirstOrDefault(ms => ms.Member.IdCardNumber == memberSubscriptionEditVM.MemberCardId && ms.Subscription.Code == memberSubscriptionEditVM.SubscriptionCode && ms.IsDeleted == false);
+
+                    if (existingMemberSubscription == null)
+                    {
+                        throw new Exception("ExistingMemberSubscription Member is null");
+                    }
+                    existingMemberSubscription.RemainingSessions = memberSubscriptionEditVM.RemainingSessions;
+                    _ApplicationDbContext.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
             
         }

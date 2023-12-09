@@ -1,6 +1,8 @@
-﻿using FinalProject_GymManagement.BusinessLayer.Services.Interfaces;
+﻿using FinalProject_GymManagement.BusinessLayer.Services.Implementations;
+using FinalProject_GymManagement.BusinessLayer.Services.Interfaces;
 using FinalProject_GymManagement.Data;
 using FinalProject_GymManagement.Data.Entities;
+using FinalProject_GymManagement.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProject_GymManagement.Controllers
@@ -13,17 +15,8 @@ namespace FinalProject_GymManagement.Controllers
 
         public IActionResult GetAllSubscriptions()
         {
-            try
-            {
                 var subs = _subscription.GetSubscriptions();
                 return View(subs);
-            }
-
-            catch (Exception ex)
-            {
-                ViewBag.errorMessage = ex.Message;
-                return View("Error");
-            }
         }
 
         public SubscriptionController(ApplicationDbContext context, ISubscription subscription)
@@ -38,78 +31,60 @@ namespace FinalProject_GymManagement.Controllers
 
         public IActionResult CreateSubscription()
         {
-            var subscription = new Subscription();
-            return View(subscription);
+            
+             var subscription = new Subscription();
+             return View(subscription);
+            
+            
         }
 
         [HttpPost]
-        public IActionResult CreateSubscription([FromForm] Subscription subscription)
+        public IActionResult CreateSubscription([FromForm] SubscriptionCreateVM subscription)
         {
-            if (ModelState.IsValid)
-            {
-                if (_subscription.SubscriptionExists(subscription.Code))
-                {
-                    ModelState.AddModelError("", "This subscription already exists, please check your code number again!");
-                    return View(subscription);
-                }
-                _subscription.CreateSubscription(subscription);
-                return RedirectToAction("GetAllSubscriptions", "Subscription");
-            }
-            return View(subscription);
+             if (ModelState.IsValid)
+             {
+                 _subscription.CreateSubscription(subscription);
+                 return RedirectToAction("GetAllSubscriptions", "Subscription");
+             }
+             return View(subscription);
         }
 
         public IActionResult Edit(string code)
         {
+                var subscription = _subscription.GetSubscriptionByCode(code);
 
-            var subscription = _subscription.GetSubscriptionByCode(code);
-
-            if (subscription == null)
-            {
-                return NotFound();
-            }
-
-            return View(subscription);
-        }
-
-        [HttpPost]
-        public IActionResult Edit([FromForm] Subscription subscription)
-        {
-            try
-            {
-                var existingSub = _context.Subscription.Where(m => m.Code == subscription.Code).FirstOrDefault();
-
-                if (existingSub == null)
+                if (subscription == null)
                 {
                     return NotFound();
                 }
 
+                return View(subscription);
+            
+        }
+
+        [HttpPost]
+        public IActionResult Edit([FromForm] SubscriptionEditVM subscription)
+        {
                 if (ModelState.IsValid)
                 {
-                    existingSub.Description = subscription.Description;
-                    existingSub.NumberOfMonths = subscription.NumberOfMonths;
-                    existingSub.WeekFrequency = subscription.WeekFrequency;
-                    existingSub.TotalNumberOfSessions = subscription.TotalNumberOfSessions;
-                    existingSub.TotalPrice = subscription.TotalPrice;
-                    existingSub.IsDeleted = subscription.IsDeleted;
-
-                    _context.SaveChanges();
-
-                    return RedirectToAction("GetAllMembers", "Member");
+                    _subscription.Edit(subscription);
+                    return RedirectToAction("GetAllSubscriptions", "Subscription");
                 }
-                return View(existingSub);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.errorMessage = ex.Message;
-                return View("Error");
-            }
+                return View(subscription);
         }
 
         [HttpPost]
         public IActionResult SoftDelete(string code)
         {
-            _subscription.SoftDelete(code);
-            return RedirectToAction("GetAllSubscriptions");
+                _subscription.SoftDelete(code);
+                return RedirectToAction("GetAllSubscriptions");
+        }
+
+        [HttpGet]
+        public IActionResult Search(SubscriptionFilterSearchVM subscriptions)
+        {
+            var searchResults = _subscription.Search(subscriptions);
+            return View("GetAllSubscriptions", searchResults);
         }
     }
 }

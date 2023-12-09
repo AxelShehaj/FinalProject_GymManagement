@@ -19,6 +19,7 @@ namespace FinalProject_GymManagement.Data.Entities
         public int SubscriptionID { get; set; }
         public Subscription Subscription { get; set; }
         #endregion
+
         public decimal OriginalPrice { get; set; }
         public decimal DiscountValue { get; set; }
         public decimal PaidPrice { get; set; }

@@ -1,4 +1,4 @@
-﻿@model List<FinalProject_GymManagement.Data.Entities.Subscription>
+﻿@model List<FinalProject_GymManagement.ViewModel.SubscriptionGridTableVM>
 
 @{
     ViewData["Title"] = "All Subscription types";
@@ -6,8 +6,18 @@
 
 <h2>All Subscription types</h2>
 
+<form method="get" action="@Url.Action("Search", "Subscription")" class="search-form">
+    <label for="searchQuery">Search:</label>
+    <input type="text" name="subscriptions.Code" placeholder="Code">
+    <input type="text" name="subscriptions.Description" placeholder="Description">
+    <input type="text" name="subscriptions.NumberOfMonths" placeholder="Number Of Months">
+    <input type="text" name="subscriptions.WeekFrequency" placeholder="Week Frequency">
+    <button type="submit" class="search-button">Search</button>
+</form>
+
 @if (Model != null && Model.Any())
 {
+    <p>Search results:</p>
     <table class="table">
         <thead>
             <tr>
@@ -17,7 +27,6 @@
                 <th>Week Frequency</th>
                 <th>Total Number Of Sessions</th>
                 <th>Total Price</th>
-                <th>Is Deleted</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -31,7 +40,6 @@
                     <td>@sub.WeekFrequency</td>
                     <td>@sub.TotalNumberOfSessions</td>
                     <td>@sub.TotalPrice</td>
-                    <td>@(sub.IsDeleted ? "Yes" : "No")</td>
                     <td>
                         <button class="editSubscription" data-code="@sub.Code">Edit</button>
                         <button class="deleteSubscription" data-code="@sub.Code">Delete</button>

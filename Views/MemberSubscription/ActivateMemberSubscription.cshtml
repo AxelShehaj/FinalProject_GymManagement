@@ -9,28 +9,31 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-controller="MemberSubscription" asp-action="ActivateMemberSubscription" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @using (Html.BeginForm("ActivateMemberSubscription", "MemberSubscription", FormMethod.Post))
+        {
+
+            var memberCardList = Model.MemberCardList ?? new List<SelectListItem>();
+            var subscriptionCodeList = Model.SubscriptionCodeList ?? new List<SelectListItem>();
 
             <div class="form-group">
-                <label asp-for="MemberCardID"></label>
-                <input asp-for="MemberCardID" class="form-control" />
-                <span asp-validation-for="MemberCardID" class="text-danger"></span>
+                @Html.LabelFor(model => model.MemberCardID)
+                @Html.DropDownListFor(model => model.MemberCardID, new SelectList(memberCardList, "Value", "Text"), "Select Member Card", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.MemberCardID, "", new { @class = "text-danger" })
             </div>
 
             <div class="form-group">
-                <label asp-for="SubscribtionCode"></label>
-                <input asp-for="SubscribtionCode" class="form-control" />
-                <span asp-validation-for="SubscribtionCode" class="text-danger"></span>
+                @Html.LabelFor(model => model.SubscribtionCode)
+                @Html.DropDownListFor(model => model.SubscribtionCode, new SelectList(subscriptionCodeList, "Value", "Text"), "Select Subscription Code", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SubscribtionCode, "", new { @class = "text-danger" })
             </div>
 
             <div class="form-group">
                 <input type="submit" value="Activate Member Subscription" class="btn btn-primary" />
             </div>
-        </form>
+        }
     </div>
 </div>
 
 <div>
-    <a asp-action="GetAllMembers">Back to List</a>
+    @Html.ActionLink("Back to List", "GetAllMembersSubscription")
 </div>

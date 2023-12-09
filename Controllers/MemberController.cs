@@ -1,6 +1,8 @@
-﻿using FinalProject_GymManagement.BusinessLayer.Services.Interfaces;
+﻿using FinalProject_GymManagement.BusinessLayer.Services.Implementations;
+using FinalProject_GymManagement.BusinessLayer.Services.Interfaces;
 using FinalProject_GymManagement.Data;
 using FinalProject_GymManagement.Data.Entities;
+using FinalProject_GymManagement.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,90 +26,56 @@ namespace FinalProject_GymManagement.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult Search(MemberFilterSearchVM members)
+        {
+            var searchResults = _members.Search(members);
+            return View("GetAllMembers", searchResults);
+        }
+
         public IActionResult Create()
         {
-            var member = new Member();
+            var member = new MemberCreateVM();
             return View(member);
         }
 
         [HttpPost]
-        public IActionResult Create([Bind("FirstName,LastName,Birthdate,IdCardNumber,Email,RegistrationDate")] Member member)
+        public IActionResult Create([FromForm] MemberCreateVM memberCreateVM)
         {
             if (ModelState.IsValid)
             {
-                if (_members.MemberExists(member.IdCardNumber))
-                {
-                    ModelState.AddModelError("","The member already exists, please check your email or Id card number!");
-                    return View(member);
-                }
-                _members.CreateMember(member);
+                _members.CreateMember(memberCreateVM);
                 return RedirectToAction("GetAllMembers", "Member");
             }
-            return View(member);
+            return View(memberCreateVM);
         }
 
         
         public IActionResult GetAllMembers()
         {
-            try
-            {
                 var members = _members.GetMembers();
                 return View(members);
-            }
-
-            catch(Exception ex)
-            {
-                ViewBag.errorMessage = ex.Message;
-                return View("Error");
-            }
         }
 
         public IActionResult Edit(string cardID)
         {
-
             var member = _members.GetMemberByCardID(cardID);
-
             if (member == null)
             {
                 return NotFound();
             }
-
             return View(member);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string cardID, [Bind("FirstName,LastName,Birthdate,IdCardNumber,Email,RegistrationDate,IsDeleted")] Member member)
+        public IActionResult Edit([FromForm] MemberEditVM memberEditVM)
         {
-            try
-            {
-                var existingMember = _context.Members.Where(m => m.IdCardNumber == cardID).FirstOrDefault();
-
-                if (existingMember == null)
-                {
-                    return NotFound();
-                }
-
                 if (ModelState.IsValid)
                 {
-                    existingMember.FirstName = member.FirstName;
-                    existingMember.LastName = member.LastName;
-                    existingMember.Email = member.Email;
-                    existingMember.Birthdate = member.Birthdate;
-                    existingMember.IdCardNumber = member.IdCardNumber;
-                    existingMember.IsDeleted = member.IsDeleted;
-
-                    _context.SaveChanges();
-
+                    _members.Edit(memberEditVM);
                     return RedirectToAction("GetAllMembers", "Member");
                 }
-                return View(member);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.errorMessage = ex.Message;
-                return View("Error");
-            }
-
+                return View(memberEditVM);
         }
 
         [HttpPost]

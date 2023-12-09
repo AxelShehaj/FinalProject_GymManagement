@@ -1,6 +1,8 @@
 ﻿using FinalProject_GymManagement.BusinessLayer.Services.Interfaces;
 using FinalProject_GymManagement.Data;
 using FinalProject_GymManagement.Data.Entities;
+using FinalProject_GymManagement.ViewModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
 {
@@ -13,38 +15,78 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
         }
 
 
-        public List<Member> GetMembers()
+        private string CreateString(int stringLength)
         {
-            //var members = new List<Member>();
+            Random rd = new Random();
+            const string allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            char[] chars = new char[stringLength];
+
+            for (int i = 0; i < stringLength; i++)
+            {
+                chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
+            }
+
+            return new string(chars);
+        }
+
+        public List<MemberGridTableVM> GetMembers()
+        {
             var members = _ApplicationDbContext.Members.Where(m => m.IsDeleted == false).ToList();
-            return members;
+            var membersVM = members.Select(member => new MemberGridTableVM
+            {
+                FirstName = member.FirstName,
+                LastName = member.LastName,
+                Birthdate = member.Birthdate,
+                IdCardNumber = member.IdCardNumber,
+                Email = member.Email,
+                RegistrationDate = member.RegistrationDate,
+            }).ToList();
+            return membersVM;
         }
 
         // Check if the member exists
         public bool MemberExists(string idCard)
         {
-            return _ApplicationDbContext.Members.Any(m => m.IdCardNumber == idCard);
-        }
-        // Creating a new member in the database
-        public void CreateMember(Member member)
-        {
-
             try
             {
-                if (member == null)
+                return _ApplicationDbContext.Members.Any(m => m.IdCardNumber == idCard);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+        // Creating a new member in the database
+        public void CreateMember(MemberCreateVM memberViewModel)
+        {
+            try
+            {
+                if (memberViewModel == null)
                 {
                     throw new Exception("There is no Member added");
                 }
 
-                member.IsDeleted = false;
+                var member = new Member
+                {
+                    FirstName = memberViewModel.FirstName,
+                    LastName = memberViewModel.LastName,
+                    Birthdate = memberViewModel.Birthdate,
+                    Email = memberViewModel.Email,
+                    RegistrationDate = DateTime.Now,
+                    IdCardNumber = CreateString(6),
+                    IsDeleted = false
+                };
 
-                _ApplicationDbContext.Members.Add(member);
-                _ApplicationDbContext.SaveChanges();
-
+                if (!MemberExists(member.IdCardNumber))
+                {
+                    _ApplicationDbContext.Members.Add(member);
+                    _ApplicationDbContext.SaveChanges();
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Error in getting the Members details");
+                throw ex;
             }
 
         }
@@ -77,9 +119,9 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
 
                 return member;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Error in getting member");
+                throw ex;
             }
         }
 
@@ -115,7 +157,7 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
             }
         }
 
-        public Member GetMemberByCardID(string cardID)
+        public MemberEditVM GetMemberByCardID(string cardID)
         {
             try
             {
@@ -124,21 +166,19 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                     throw new Exception("We cant find a member, please check the Name, Last Name, Card ID or Email again");
                 }
                 var gymMember = _ApplicationDbContext.Members.Where(m => m.IdCardNumber == cardID).FirstOrDefault();
-                var member = new Member()
+                var member = new MemberEditVM()
                 {
                     FirstName = gymMember.FirstName,
                     LastName = gymMember.LastName,
                     Email = gymMember.Email,
-                    IdCardNumber = gymMember.IdCardNumber,
                     Birthdate = gymMember.Birthdate,
-                    RegistrationDate = gymMember.RegistrationDate,
-                    IsDeleted = gymMember.IsDeleted,
+                    IdCardNumber = gymMember.IdCardNumber,
                 };
                 return member;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Error in getting member");
+                throw ex;
             }
         }
 
@@ -168,13 +208,12 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                 }
                 return member;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Error in getting member");
+                throw ex;
             }
         }
         #endregion
-
 
         public void SoftDelete(string cardID)
         {
@@ -188,11 +227,76 @@ namespace FinalProject_GymManagement.BusinessLayer.Services.Implementations
                     _ApplicationDbContext.SaveChanges();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Error");
+                throw ex;
             }
-            
+
+        }
+
+        public List<MemberGridTableVM> Search(MemberFilterSearchVM members)
+        {
+            try
+            {
+                var query = _ApplicationDbContext.Members.AsQueryable();
+                if (members.IdCardNumber != null)
+                {
+                    query = query.Where(m => m.IdCardNumber == members.IdCardNumber);
+                }
+                if (!string.IsNullOrEmpty(members.FirstName))
+                {
+                    query = query.Where(m => m.FirstName.Contains(members.FirstName));
+                }
+                if (!string.IsNullOrEmpty(members.LastName))
+                {
+                    query = query.Where(m => m.LastName.Contains(members.LastName));
+                }
+                if (!string.IsNullOrEmpty(members.Email))
+                {
+                    query = query.Where(m => m.Email.Contains(members.Email));
+                }
+                var result = query.Select(m => new MemberGridTableVM
+                {
+                    FirstName = m.FirstName,
+                    LastName = m.LastName,
+                    Email = m.Email,
+                    Birthdate = m.Birthdate,
+                    RegistrationDate = m.RegistrationDate,
+                    IdCardNumber = m.IdCardNumber
+                }).ToList();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public void Edit(MemberEditVM memberEditVM)
+        {
+            try
+            {
+                if (memberEditVM != null)
+                {
+                    var existingMember = _ApplicationDbContext.Members.Where(m => m.IdCardNumber == memberEditVM.IdCardNumber).FirstOrDefault();
+                    if (existingMember == null)
+                    {
+                        throw new Exception("Existing Member is null");
+                    }
+                    existingMember.FirstName = memberEditVM.FirstName;
+                    existingMember.LastName = memberEditVM.LastName;
+                    existingMember.Email = memberEditVM.Email;
+                    existingMember.Birthdate = memberEditVM.Birthdate;
+
+                    _ApplicationDbContext.SaveChanges();
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

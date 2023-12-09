@@ -25,15 +25,18 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li >
-                        <li class="nav-item">
-                            @Html.ActionLink("Create Member", "Create", "Member")
-                        </li>
-                        <li class="nav-item">
-                            @Html.ActionLink(" Create Subscription", "CreateSubscription", "Subscription")
-                        </li>
-                        <li class="nav-item">
-                            @Html.ActionLink(" Activate Member Subscription", "ActivateMemberSubscription", "MemberSubscription")
-                        </li>
+                       @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                @Html.ActionLink("Create Member", "Create", "Member")
+                            </li>
+                            <li class="nav-item">
+                                @Html.ActionLink(" Create Subscription", "CreateSubscription", "Subscription")
+                            </li>
+                            <li class="nav-item">
+                                @Html.ActionLink(" Activate Member Subscription", "ActivateMemberSubscription", "MemberSubscription")
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

@@ -1,4 +1,4 @@
-﻿@model FinalProject_GymManagement.Data.Entities.Member
+﻿@* @model FinalProject_GymManagement.Data.Entities.Member
 
 @{
     ViewData["Title"] = "Edit Member";
@@ -55,4 +55,55 @@
         <input type="hidden" name="cardID" value="@Model.IdCardNumber" />
         <button type="submit">Delete</button>
     </form>
-</form>
+</form> *@
+
+@model FinalProject_GymManagement.ViewModel.MemberEditVM
+
+@{
+    ViewData["Title"] = "Edit Member";
+}
+
+<h2>Edit Member</h2>
+@using (Html.BeginForm("Edit", "Member", FormMethod.Post))
+{
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @Html.HiddenFor(model => model.IdCardNumber)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.FirstName, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.LastName, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Birthdate, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.Birthdate, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Birthdate, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Email, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+    </div>
+
+    <form asp-controller="Member" asp-action="Edit" method="post">
+        <input type="hidden" name="cardID" value="@Model.IdCardNumber" />
+        <button type="submit">Save Changes</button>
+        <a asp-action="GetAllMembers" class="btn btn-secondary">Back to List</a>
+    </form>
+}
+
+
+@using (Html.BeginForm("SoftDelete", "Member", FormMethod.Post))
+{
+    @Html.Hidden("cardID", Model.IdCardNumber)
+    <button type="submit" class="btn btn-danger">Delete</button>
+}

@@ -2,7 +2,6 @@
 {
     public class MemberSubscriptionTableVM
     {
-        public int Id { get; set; } = 1;
         public string MemberCardId { get; set; }
         public string SubscriptionCode { get; set; }
         public string Email { get; set; }

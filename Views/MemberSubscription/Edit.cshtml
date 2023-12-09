@@ -1,4 +1,4 @@
-﻿@model FinalProject_GymManagement.ViewModel.MemberSubscriptionTableVM
+﻿@* @model FinalProject_GymManagement.ViewModel.MemberSubscriptionTableVM
 
 @{
     ViewData["Title"] = "Edit Subscription";
@@ -59,4 +59,35 @@
         <button type="submit">Save Changes</button>
         <a asp-action="GetAllMembersSubscription" class="btn btn-secondary">Back to List</a>
     </form>
-</form>
+</form> *@
+
+@model FinalProject_GymManagement.ViewModel.MemberSubscriptionEditVM
+
+@{
+    ViewData["Title"] = "Edit Subscription";
+}
+
+<h2>Edit Subscription</h2>
+
+@using (Html.BeginForm("Edit", "MemberSubscription", FormMethod.Post))
+{
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @Html.HiddenFor(model => model.SubscriptionCode)
+    @Html.HiddenFor(model => model.MemberCardId)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.RemainingSessions, new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.RemainingSessions, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.RemainingSessions, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "GetAllMembersSubscription", null, new { @class = "btn btn-secondary" })
+</div>
+

@@ -1,5 +1,5 @@
 ﻿
-@model List<FinalProject_GymManagement.Data.Entities.Member>
+@model List<FinalProject_GymManagement.ViewModel.MemberGridTableVM>
 
 @{
     ViewData["Title"] = "All Members";
@@ -7,9 +7,18 @@
 
 <h2>All Members</h2>
 
+<form method="get" action="@Url.Action("Search", "Member")" class="search-form">
+    <label for="searchQuery">Search:</label>
+    <input type="text" name="members.FirstName" placeholder="First Name">
+    <input type="text" name="members.LastName" placeholder="Last Name">
+    <input type="text" name="members.Email" placeholder="Email">
+    <input type="text" name="members.IdCardNumber" placeholder="ID Card Number">
+    <button type="submit" class="search-button">Search</button>
+</form>
 
 @if (Model != null && Model.Any())
 {
+    <p>Search results:</p>
     <table class="table">
         <thead>
             <tr>
@@ -19,7 +28,6 @@
                 <th>ID Card Number</th>
                 <th>Email</th>
                 <th>Registration Date</th>
-                <th>Is Deleted</th>
             </tr>
         </thead>
         <tbody>
@@ -32,7 +40,6 @@
                     <td>@member.IdCardNumber</td>
                     <td>@member.Email</td>
                     <td>@member.RegistrationDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                    <td>@(member.IsDeleted ? "Yes" : "No")</td>
                     <td>
                         <a asp-controller="Member" asp-action="Edit" asp-route-cardID="@member.IdCardNumber">Edit</a>
                     </td>
